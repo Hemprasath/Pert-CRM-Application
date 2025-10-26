@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Pert-CRM-Application/static/css/main.1061f889.css",
-    "main.js": "/Pert-CRM-Application/static/js/main.a8b03b13.js",
+    "main.js": "/Pert-CRM-Application/static/js/main.8a582061.js",
     "static/js/239.fe7836ad.chunk.js": "/Pert-CRM-Application/static/js/239.fe7836ad.chunk.js",
     "static/js/977.13cf88c7.chunk.js": "/Pert-CRM-Application/static/js/977.13cf88c7.chunk.js",
     "static/js/455.47be920d.chunk.js": "/Pert-CRM-Application/static/js/455.47be920d.chunk.js",
@@ -11,7 +11,7 @@
     "static/media/petDog.jpeg": "/Pert-CRM-Application/static/media/petDog.6ada6d5373a167384fd8.jpeg",
     "index.html": "/Pert-CRM-Application/index.html",
     "main.1061f889.css.map": "/Pert-CRM-Application/static/css/main.1061f889.css.map",
-    "main.a8b03b13.js.map": "/Pert-CRM-Application/static/js/main.a8b03b13.js.map",
+    "main.8a582061.js.map": "/Pert-CRM-Application/static/js/main.8a582061.js.map",
     "239.fe7836ad.chunk.js.map": "/Pert-CRM-Application/static/js/239.fe7836ad.chunk.js.map",
     "977.13cf88c7.chunk.js.map": "/Pert-CRM-Application/static/js/977.13cf88c7.chunk.js.map",
     "455.47be920d.chunk.js.map": "/Pert-CRM-Application/static/js/455.47be920d.chunk.js.map",
@@ -19,6 +19,6 @@
   },
   "entrypoints": [
     "static/css/main.1061f889.css",
-    "static/js/main.a8b03b13.js"
+    "static/js/main.8a582061.js"
   ]
 }
