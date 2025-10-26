@@ -1,0 +1,694 @@
+import React, { useState } from "react";
+import {
+  Box,
+  CssBaseline,
+  Toolbar,
+  Typography,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Switch,
+  FormControlLabel,
+  Grid,
+} from "@mui/material";
+import { Search, Filter, Edit3, Trash2 } from "lucide-react";
+import Navbar from "../components/Navbar";
+import Sidebar from "../components/Sidebar";
+
+const drawerWidth = 260;
+
+// Dummy customer data
+const initialCustomers = [
+  {
+    id: 1,
+    name: "John Doe",
+    pet: "Golden Retriever - Max",
+    email: "john@example.com",
+    services: { email: true, sms: false, ai: true },
+  },
+  {
+    id: 2,
+    name: "Jane Smith",
+    pet: "Persian Cat - Kitty",
+    email: "jane@example.com",
+    services: { email: true, sms: true, ai: false },
+  },
+];
+
+export default function AdminMarketingToolPage() {
+  const email = "admin@demo.com";
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [customers, setCustomers] = useState(initialCustomers);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleEdit = (customer) => {
+    setSelectedCustomer(customer);
+    setDialogOpen(true);
+  };
+
+  const handleSave = () => {
+    setCustomers((prev) =>
+      prev.map((c) =>
+        c.id === selectedCustomer.id ? selectedCustomer : c
+      )
+    );
+    setDialogOpen(false);
+  };
+
+  const handleDelete = (id) => {
+    setCustomers((prev) => prev.filter((c) => c.id !== id));
+  };
+
+  return (
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <Navbar email={email} />
+      <Sidebar />
+
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 4,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          bgcolor: "#f1f5f9",
+          minHeight: "100vh",
+        }}
+      >
+        <Toolbar />
+
+        {/* Page Title */}
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 800,
+            mb: 4,
+            background: "linear-gradient(90deg, #0A1F44, #54A2D9)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          Marketing Tools
+        </Typography>
+
+        {/* Search + Status Filter */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+            flexWrap: "wrap",
+            gap: 2,
+          }}
+        >
+          <TextField
+            variant="outlined"
+            placeholder="Search by name, email, or pet..."
+            size="small"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{
+              flex: 1,
+              minWidth: "300px",
+              maxWidth: "45%",
+              background: "#fff",
+              borderRadius: 2,
+              boxShadow: "0 3px 10px rgba(0,0,0,0.05)",
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search size={18} />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton>
+                    <Filter size={18} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <Stack direction="row" alignItems="center" spacing={2.5}>
+            <Typography>Status:</Typography>
+            <ToggleButtonGroup
+              value={statusFilter}
+              exclusive
+              onChange={(e, val) => val !== null && setStatusFilter(val)}
+              size="small"
+              sx={{
+                borderRadius: "9999px",
+                backdropFilter: "blur(10px)",
+                background: "#e0f7ff",
+              }}
+            >
+              {["All", "Active", "Inactive"].map((val) => (
+                <ToggleButton key={val} value={val}>
+                  {val}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </Stack>
+        </Box>
+
+        {/* Customers Table */}
+        <Box sx={{ overflowX: "auto" }}>
+          <Table sx={{ minWidth: 800 }}>
+            <TableHead>
+              <TableRow sx={{ background: "#E0F2FE" }}>
+                <TableCell>Customer Name</TableCell>
+                <TableCell>Pet Details</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Email Enabled</TableCell>
+                <TableCell>SMS Enabled</TableCell>
+                <TableCell>AI Features Enabled</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {customers
+                .filter((c) =>
+                  c.name.toLowerCase().includes(search.toLowerCase()) ||
+                  c.pet.toLowerCase().includes(search.toLowerCase()) ||
+                  c.email.toLowerCase().includes(search.toLowerCase())
+                )
+                .map((c) => (
+                  <TableRow key={c.id} hover>
+                    <TableCell>{c.name}</TableCell>
+                    <TableCell>{c.pet}</TableCell>
+                    <TableCell>{c.email}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={c.services.email ? "Enabled" : "Disabled"}
+                        size="small"
+                        sx={{
+                          background: c.services.email
+                            ? "#4ade80"
+                            : "#f87171",
+                          color: "#0A1F44",
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={c.services.sms ? "Enabled" : "Disabled"}
+                        size="small"
+                        sx={{
+                          background: c.services.sms
+                            ? "#4ade80"
+                            : "#f87171",
+                          color: "#0A1F44",
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={c.services.ai ? "Enabled" : "Disabled"}
+                        size="small"
+                        sx={{
+                          background: c.services.ai ? "#4ade80" : "#f87171",
+                          color: "#0A1F44",
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => handleEdit(c)}>
+                        <Edit3 size={18} color="#3C8AC6" />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(c.id)}>
+                        <Trash2 size={18} color="#D32F2F" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </Box>
+
+        {/* Edit Customer Dialog */}
+        <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth maxWidth="sm">
+          <DialogTitle>Edit Customer Access</DialogTitle>
+          {selectedCustomer && (
+            <DialogContent>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Customer Name"
+                    fullWidth
+                    value={selectedCustomer.name}
+                    onChange={(e) =>
+                      setSelectedCustomer({ ...selectedCustomer, name: e.target.value })
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Pet Details"
+                    fullWidth
+                    value={selectedCustomer.pet}
+                    onChange={(e) =>
+                      setSelectedCustomer({ ...selectedCustomer, pet: e.target.value })
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Email"
+                    fullWidth
+                    value={selectedCustomer.email}
+                    onChange={(e) =>
+                      setSelectedCustomer({ ...selectedCustomer, email: e.target.value })
+                    }
+                  />
+                </Grid>
+
+                {/* Services Switches */}
+                <Grid item xs={12}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={selectedCustomer.services.email}
+                        onChange={(e) =>
+                          setSelectedCustomer({
+                            ...selectedCustomer,
+                            services: { ...selectedCustomer.services, email: e.target.checked },
+                          })
+                        }
+                        color="primary"
+                      />
+                    }
+                    label="Email Service Enabled"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={selectedCustomer.services.sms}
+                        onChange={(e) =>
+                          setSelectedCustomer({
+                            ...selectedCustomer,
+                            services: { ...selectedCustomer.services, sms: e.target.checked },
+                          })
+                        }
+                        color="primary"
+                      />
+                    }
+                    label="SMS Service Enabled"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={selectedCustomer.services.ai}
+                        onChange={(e) =>
+                          setSelectedCustomer({
+                            ...selectedCustomer,
+                            services: { ...selectedCustomer.services, ai: e.target.checked },
+                          })
+                        }
+                        color="primary"
+                      />
+                    }
+                    label="AI Features Enabled"
+                  />
+                </Grid>
+              </Grid>
+            </DialogContent>
+          )}
+          <DialogActions>
+            <Button onClick={() => setDialogOpen(false)} color="secondary">
+              Cancel
+            </Button>
+            <Button onClick={handleSave} variant="contained" color="primary">
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
+    </Box>
+  );
+}
+import React, { useState } from "react";
+import {
+  Box,
+  CssBaseline,
+  Toolbar,
+  Typography,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Switch,
+  FormControlLabel,
+  Grid,
+} from "@mui/material";
+import { Search, Filter, Edit3, Trash2 } from "lucide-react";
+import Navbar from "../components/Navbar";
+import Sidebar from "../components/Sidebar";
+
+const drawerWidth = 260;
+
+// Dummy customer data
+const initialCustomers = [
+  {
+    id: 1,
+    name: "John Doe",
+    pet: "Golden Retriever - Max",
+    email: "john@example.com",
+    services: { email: true, sms: false, ai: true },
+  },
+  {
+    id: 2,
+    name: "Jane Smith",
+    pet: "Persian Cat - Kitty",
+    email: "jane@example.com",
+    services: { email: true, sms: true, ai: false },
+  },
+];
+
+export default function AdminMarketingToolPage() {
+  const email = "admin@demo.com";
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [customers, setCustomers] = useState(initialCustomers);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleEdit = (customer) => {
+    setSelectedCustomer(customer);
+    setDialogOpen(true);
+  };
+
+  const handleSave = () => {
+    setCustomers((prev) =>
+      prev.map((c) =>
+        c.id === selectedCustomer.id ? selectedCustomer : c
+      )
+    );
+    setDialogOpen(false);
+  };
+
+  const handleDelete = (id) => {
+    setCustomers((prev) => prev.filter((c) => c.id !== id));
+  };
+
+  return (
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <Navbar email={email} />
+      <Sidebar />
+
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 4,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          bgcolor: "#f1f5f9",
+          minHeight: "100vh",
+        }}
+      >
+        <Toolbar />
+
+        {/* Page Title */}
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 800,
+            mb: 4,
+            background: "linear-gradient(90deg, #0A1F44, #54A2D9)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          Marketing Tools
+        </Typography>
+
+        {/* Search + Status Filter */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+            flexWrap: "wrap",
+            gap: 2,
+          }}
+        >
+          <TextField
+            variant="outlined"
+            placeholder="Search by name, email, or pet..."
+            size="small"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{
+              flex: 1,
+              minWidth: "300px",
+              maxWidth: "45%",
+              background: "#fff",
+              borderRadius: 2,
+              boxShadow: "0 3px 10px rgba(0,0,0,0.05)",
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search size={18} />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton>
+                    <Filter size={18} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <Stack direction="row" alignItems="center" spacing={2.5}>
+            <Typography>Status:</Typography>
+            <ToggleButtonGroup
+              value={statusFilter}
+              exclusive
+              onChange={(e, val) => val !== null && setStatusFilter(val)}
+              size="small"
+              sx={{
+                borderRadius: "9999px",
+                backdropFilter: "blur(10px)",
+                background: "#e0f7ff",
+              }}
+            >
+              {["All", "Active", "Inactive"].map((val) => (
+                <ToggleButton key={val} value={val}>
+                  {val}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </Stack>
+        </Box>
+
+        {/* Customers Table */}
+        <Box sx={{ overflowX: "auto" }}>
+          <Table sx={{ minWidth: 800 }}>
+            <TableHead>
+              <TableRow sx={{ background: "#E0F2FE" }}>
+                <TableCell>Customer Name</TableCell>
+                <TableCell>Pet Details</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Email Enabled</TableCell>
+                <TableCell>SMS Enabled</TableCell>
+                <TableCell>AI Features Enabled</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {customers
+                .filter((c) =>
+                  c.name.toLowerCase().includes(search.toLowerCase()) ||
+                  c.pet.toLowerCase().includes(search.toLowerCase()) ||
+                  c.email.toLowerCase().includes(search.toLowerCase())
+                )
+                .map((c) => (
+                  <TableRow key={c.id} hover>
+                    <TableCell>{c.name}</TableCell>
+                    <TableCell>{c.pet}</TableCell>
+                    <TableCell>{c.email}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={c.services.email ? "Enabled" : "Disabled"}
+                        size="small"
+                        sx={{
+                          background: c.services.email
+                            ? "#4ade80"
+                            : "#f87171",
+                          color: "#0A1F44",
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={c.services.sms ? "Enabled" : "Disabled"}
+                        size="small"
+                        sx={{
+                          background: c.services.sms
+                            ? "#4ade80"
+                            : "#f87171",
+                          color: "#0A1F44",
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={c.services.ai ? "Enabled" : "Disabled"}
+                        size="small"
+                        sx={{
+                          background: c.services.ai ? "#4ade80" : "#f87171",
+                          color: "#0A1F44",
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => handleEdit(c)}>
+                        <Edit3 size={18} color="#3C8AC6" />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(c.id)}>
+                        <Trash2 size={18} color="#D32F2F" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </Box>
+
+        {/* Edit Customer Dialog */}
+        <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth maxWidth="sm">
+          <DialogTitle>Edit Customer Access</DialogTitle>
+          {selectedCustomer && (
+            <DialogContent>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Customer Name"
+                    fullWidth
+                    value={selectedCustomer.name}
+                    onChange={(e) =>
+                      setSelectedCustomer({ ...selectedCustomer, name: e.target.value })
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Pet Details"
+                    fullWidth
+                    value={selectedCustomer.pet}
+                    onChange={(e) =>
+                      setSelectedCustomer({ ...selectedCustomer, pet: e.target.value })
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Email"
+                    fullWidth
+                    value={selectedCustomer.email}
+                    onChange={(e) =>
+                      setSelectedCustomer({ ...selectedCustomer, email: e.target.value })
+                    }
+                  />
+                </Grid>
+
+                {/* Services Switches */}
+                <Grid item xs={12}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={selectedCustomer.services.email}
+                        onChange={(e) =>
+                          setSelectedCustomer({
+                            ...selectedCustomer,
+                            services: { ...selectedCustomer.services, email: e.target.checked },
+                          })
+                        }
+                        color="primary"
+                      />
+                    }
+                    label="Email Service Enabled"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={selectedCustomer.services.sms}
+                        onChange={(e) =>
+                          setSelectedCustomer({
+                            ...selectedCustomer,
+                            services: { ...selectedCustomer.services, sms: e.target.checked },
+                          })
+                        }
+                        color="primary"
+                      />
+                    }
+                    label="SMS Service Enabled"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={selectedCustomer.services.ai}
+                        onChange={(e) =>
+                          setSelectedCustomer({
+                            ...selectedCustomer,
+                            services: { ...selectedCustomer.services, ai: e.target.checked },
+                          })
+                        }
+                        color="primary"
+                      />
+                    }
+                    label="AI Features Enabled"
+                  />
+                </Grid>
+              </Grid>
+            </DialogContent>
+          )}
+          <DialogActions>
+            <Button onClick={() => setDialogOpen(false)} color="secondary">
+              Cancel
+            </Button>
+            <Button onClick={handleSave} variant="contained" color="primary">
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
+    </Box>
+  );
+}
